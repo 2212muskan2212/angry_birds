@@ -1,0 +1,4 @@
+.gitkeep
+background.png
+donatehub_logo.png
+submit_button.png

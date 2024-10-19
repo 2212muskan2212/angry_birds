@@ -1,3 +1,5 @@
-.gitkeep
-donatehub_logo.png
-uiskin.png
+background.png
+bucket.png
+drop.mp3
+drop.png
+music.mp3

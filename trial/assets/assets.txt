@@ -1,4 +1,5 @@
-.gitkeep
 background.png
-donatehub_logo.png
-submit_button.png
+bucket.png
+drop.mp3
+drop.png
+music.mp3

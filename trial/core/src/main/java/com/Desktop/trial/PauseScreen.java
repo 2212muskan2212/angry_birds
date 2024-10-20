@@ -28,8 +28,8 @@ public class PauseScreen implements Screen {
         backgroundTexture = new Texture("pause_background.png"); // Load pause screen background
         resumeTexture = new Texture("resume.png"); // Load Resume button texture
         exitTexture = new Texture("exit.png");     // Load Exit button texture
-        resumeButtonRectangle = new Rectangle(325, 250, 150, 50); // Rectangle for Resume button
-        exitButtonRectangle = new Rectangle(325, 170, 150, 50);
+        resumeButtonRectangle = new Rectangle(325, 250, 150, 100); // Rectangle for Resume button
+        exitButtonRectangle = new Rectangle(325, 170, 140, 50);
         touchPos = new Vector2();
     }
 
@@ -58,7 +58,7 @@ public class PauseScreen implements Screen {
         // Draw Resume button (larger size)
         spriteBatch.draw(resumeTexture, 325, buttonYStart, buttonWidth, buttonHeight);
         // Draw Exit button (larger size, with spacing)
-        spriteBatch.draw(exitTexture, 325, buttonYStart - (buttonHeight + buttonSpacing), buttonWidth, buttonHeight);
+        spriteBatch.draw(exitTexture, 325, buttonYStart - (buttonHeight + buttonSpacing), buttonWidth, 48 );
 
         spriteBatch.end();
     }

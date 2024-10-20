@@ -69,9 +69,9 @@ public class HomeScreen implements Screen {
         float worldHeight = viewport.getWorldHeight();
 
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        spriteBatch.draw(titleTexture, 250, 350, 300, 100); // Draw the title
-        spriteBatch.draw(playButtonTexture, 340, 280, 120, 35); // Draw the play button
-        spriteBatch.draw(restoreTexture, 340, 230, 120, 35);
+        spriteBatch.draw(titleTexture, 245, 370, 320, 80); // Draw the title
+        spriteBatch.draw(playButtonTexture, 340, 285, 110, 35); // Draw the play button
+        spriteBatch.draw(restoreTexture, 340, 235, 110, 35);
 
         spriteBatch.end();
     }

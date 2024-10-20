@@ -2,12 +2,12 @@ catapult.png
 choose_level.png
 choose_level_background.png
 easy.png
-easy_level_background.png
 exit.png
 glass_block.png
 hard.png
 home_background.png
 medium.png
+medium_level_background.png
 pause_background.png
 pig.png
 play_button.png

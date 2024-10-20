@@ -19,6 +19,7 @@ public class LevelSelectionScreen implements Screen {
     private Texture easyTexture;
     private Texture mediumTexture;
     private Texture hardTexture;
+    private Rectangle easyButtonRectangle;
     private Rectangle mediumButtonRectangle;
     private Vector2 touchPos;
 
@@ -74,6 +75,7 @@ public class LevelSelectionScreen implements Screen {
             if (mediumButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new MediumLevelScreen(game)); // Switch to MediumLevelScreen
             }
+
         }
     }
 

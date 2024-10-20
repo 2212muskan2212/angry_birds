@@ -82,7 +82,7 @@ public class MediumLevelScreen implements Screen {
         game.getFont().draw(spriteBatch, "1", 710, 423);
         game.getFont().draw(spriteBatch, "1", 770, 423);
 
-        spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
+        spriteBatch.draw(catapultTexture, 80, 75, 80, 80);
         spriteBatch.draw(redBirdTexture, 50, 75, 30, 30);
 
         // Structure Drawing

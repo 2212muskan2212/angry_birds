@@ -20,6 +20,7 @@ resume.png
 resume_icon.png
 steel_block.png
 title.png
+vertical_wood_block.png
 wood_block.png
 yellow_bird.png
 yellow_bird_card.png

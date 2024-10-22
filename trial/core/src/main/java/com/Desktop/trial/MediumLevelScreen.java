@@ -14,7 +14,7 @@ public class MediumLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
     private Texture redBirdTexture, yellowBirdTexture, purpleBirdTexture;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture;
+    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture, glassTriangleTexture, stoneCircleTexture;
     private Texture pigTexture, catapultTexture, resumeIconTexture;
     private Texture redBirdCardTexture, yellowBirdCardTexture, purpleBirdCardTexture;
     private SpriteBatch spriteBatch;
@@ -34,7 +34,6 @@ public class MediumLevelScreen implements Screen {
         purpleBirdTexture = new Texture("purple_bird.png");
         woodBlockTexture = new Texture("wood_block.png");
         glassBlockTexture = new Texture("glass_block.png");
-
         steelBlockTexture = new Texture("steel_block.png");
         pigTexture = new Texture("pig.png");
         catapultTexture = new Texture("catapult.png");
@@ -42,6 +41,9 @@ public class MediumLevelScreen implements Screen {
         redBirdCardTexture = new Texture("red_bird_card.png");
         yellowBirdCardTexture = new Texture("yellow_bird_card.png");
         purpleBirdCardTexture = new Texture("purple_bird_card.png");
+        glassTriangleTexture = new Texture("glass_triangle_block.png");
+        stoneCircleTexture = new Texture("stone_circle_block.png");
+
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
@@ -58,6 +60,17 @@ public class MediumLevelScreen implements Screen {
     public void render(float delta) {
         input();
         draw();
+    }
+
+    private void input() {
+        if (Gdx.input.isTouched()) {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                System.out.println("Resume button clicked! Transitioning back.");
+                game.setScreen(new PauseScreen(game, this));
+            }
+        }
     }
 
     private void draw() {
@@ -83,7 +96,7 @@ public class MediumLevelScreen implements Screen {
         game.getFont().draw(spriteBatch, "1", 710, 423);
         game.getFont().draw(spriteBatch, "1", 770, 423);
 
-        spriteBatch.draw(catapultTexture, 80, 75, 80, 80);
+        spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
         spriteBatch.draw(redBirdTexture, 50, 75, 30, 30);
 
         // Structure Drawing
@@ -123,22 +136,25 @@ public class MediumLevelScreen implements Screen {
         spriteBatch.draw(woodBlockTexture, 610, 210, blockWidth, blockHeight);
 
         // Draw pigs: Three pigs placed symmetrically
-        spriteBatch.draw(pigTexture, 561,175, 40, 40); // Center pig on top
-        spriteBatch.draw(pigTexture, 500,241, 40, 40);
-        spriteBatch.draw(pigTexture, 620,241, 40, 40);
-    }
+        spriteBatch.draw(pigTexture, 564,210, 36, 36); // Center pig on top
+        spriteBatch.draw(pigTexture, 500,241, 36, 36);
+        spriteBatch.draw(pigTexture, 620,241, 36, 36);
 
-    private void input() {
-        if (Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                System.out.println("Resume button clicked! Transitioning to PauseScreen.");
-                game.setScreen(new PauseScreen(game)); // Transition to the PauseScreen
-            }
-        }
-    }
+        spriteBatch.draw(woodBlockTexture, 495, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlockTexture, 530, 230, blockWidth / 5, blockHeight * 2);
 
+        spriteBatch.draw(woodBlockTexture, 613, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlockTexture, 650, 230, blockWidth / 5, blockHeight * 2);
+
+        spriteBatch.draw(glassTriangleTexture, 495, 297, 50, 50);
+        spriteBatch.draw(glassTriangleTexture, 615, 297, 50, 50);
+
+        spriteBatch.draw(stoneCircleTexture, 545, 177, 40, 40);
+        spriteBatch.draw(stoneCircleTexture, 580, 177, 40, 40);
+
+
+
+    }
 
     @Override
     public void resize(int width, int height) {

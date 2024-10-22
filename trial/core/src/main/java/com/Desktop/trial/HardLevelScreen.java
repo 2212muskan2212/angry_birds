@@ -10,11 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class EasyLevelScreen implements Screen {
+public class HardLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
     private Texture redBirdTexture, yellowBirdTexture, purpleBirdTexture;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture;
+    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture,glassTriangleTexture, stoneCircleTexture;
     private Texture pigTexture, catapultTexture, resumeIconTexture;
     private Texture redBirdCardTexture, yellowBirdCardTexture, purpleBirdCardTexture;
     private SpriteBatch spriteBatch;
@@ -22,13 +22,13 @@ public class EasyLevelScreen implements Screen {
     private Rectangle resumeButtonRectangle;
     private Vector2 touchPos;
 
-    public EasyLevelScreen(Main game) {
+    public HardLevelScreen(Main game) {
         this.game = game;
         create();
     }
 
     private void create() {
-        backgroundTexture = new Texture("easy_level_background.png");
+        backgroundTexture = new Texture("hard_level_background.png");
         redBirdTexture = new Texture("red_bird.png");
         yellowBirdTexture = new Texture("yellow_bird.png");
         purpleBirdTexture = new Texture("purple_bird.png");
@@ -41,6 +41,8 @@ public class EasyLevelScreen implements Screen {
         redBirdCardTexture = new Texture("red_bird_card.png");
         yellowBirdCardTexture = new Texture("yellow_bird_card.png");
         purpleBirdCardTexture = new Texture("purple_bird_card.png");
+        glassTriangleTexture = new Texture("glass_triangle_block.png");
+        stoneCircleTexture = new Texture("stone_circle_block.png");
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
@@ -91,11 +93,11 @@ public class EasyLevelScreen implements Screen {
         // Hardcoded fonts
         game.getFont().draw(spriteBatch, "Score: 0", 70, 445);
         game.getFont().draw(spriteBatch, "2", 650, 423);
-        game.getFont().draw(spriteBatch, "2", 710, 423);
+        game.getFont().draw(spriteBatch, "3", 710, 423);
         game.getFont().draw(spriteBatch, "1", 770, 423);
 
-        spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
-        spriteBatch.draw(redBirdTexture, 150, 130, 30, 30);
+        spriteBatch.draw(catapultTexture, 105, 75, 60, 60);
+        spriteBatch.draw(purpleBirdTexture, 60, 70, 35, 35);
 
         // Structure Drawing
         drawStructure();
@@ -108,35 +110,63 @@ public class EasyLevelScreen implements Screen {
     private void drawStructure() {
         int blockWidth = 60, blockHeight = 40;
 
-        spriteBatch.draw(woodBlockTexture, 480, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 570, 75, blockWidth, blockHeight);
+        // First (Bottom) Layer: Wooden blocks
+        spriteBatch.draw(woodBlockTexture, 500, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 560, 75, blockWidth, blockHeight);
 
-        // Second Layer: Two vertical wood blocks on the sides
-        spriteBatch.draw(woodBlockTexture, 480, 85, blockWidth, blockHeight * 2); // Double height for vertical blocks
-        spriteBatch.draw(woodBlockTexture, 570, 85, blockWidth, blockHeight * 2);
+        // Second Layer: Glass blocks on top of wood, supporting the pigs
+        spriteBatch.draw(glassBlockTexture, 500, 107, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlockTexture, 560, 107, blockWidth, blockHeight);
 
-        // Third Layer: One horizontal wood block
-        spriteBatch.draw(woodBlockTexture, 480, 145, blockWidth, blockHeight);
+        // Draw the first pig in the middle between two glass blocks
+        spriteBatch.draw(pigTexture, 510, 149, 45, 45);
 
-        // Fourth Layer: Two vertical glass blocks in the center
-        spriteBatch.draw(woodBlockTexture, 510, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 567, 200, blockWidth / 2, blockHeight * 2);
+        // Third Layer: Steel blocks on top of glass for more durability
+        spriteBatch.draw(steelBlockTexture, 500, 200, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlockTexture, 560, 200, blockWidth, blockHeight);
 
-        // Fifth Layer: One horizontal wood block on top
-        spriteBatch.draw(woodBlockTexture, 570, 145, blockWidth, blockHeight);
+        // Fourth Layer: Two horizontal wooden blocks on top of steel
+        spriteBatch.draw(woodBlockTexture, 494, 230, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 566, 230, blockWidth, blockHeight);
 
-        // Draw the pig in the middle of the top layer
-        spriteBatch.draw(pigTexture, 533, 212, 40, 40);
+        // Fifth Layer: More pigs at the top
+        spriteBatch.draw(pigTexture, 513, 260, 40, 40);
+        spriteBatch.draw(pigTexture, 568, 260, 40, 40);
 
-        spriteBatch.draw(glassBlockTexture, 525, 175, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 500, 249, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlockTexture, 550, 220, blockWidth / 3, blockHeight * 3);
+        spriteBatch.draw(woodBlockTexture, 600, 249, blockWidth / 3, blockHeight * 2);
+        //slim wood blocks
+        spriteBatch.draw(woodBlockTexture, 495, 130, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlockTexture, 545, 130, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlockTexture, 600, 130, blockWidth / 3, blockHeight * 2);
 
-        spriteBatch.draw(glassBlockTexture, 525, 265, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 490, 310, 150, blockHeight);
+        // Support columns on both sides (vertical wood)
+        //spriteBatch.draw(woodBlockTexture, 460, 75, blockWidth / 2, 150); // Left column
+        //spriteBatch.draw(woodBlockTexture, 640, 75, blockWidth / 2, 150); // Right column
 
+        // Draw the first pig in the middle between two glass blocks
+        spriteBatch.draw(pigTexture, 560, 149, 45, 45);
 
+        spriteBatch.draw(glassTriangleTexture, 578, 343, 40, 40);
+        spriteBatch.draw(glassTriangleTexture, 510, 343, 40, 40);
+        spriteBatch.draw(pigTexture, 544, 343, 40, 40);
+        spriteBatch.draw(woodBlockTexture, 495, 375, 150, 20);
 
+        //spriteBatch.draw(stoneCircleTexture, 500, 390, 40, 40);
+        //spriteBatch.draw(stoneCircleTexture, 600, 390, 40, 40);
 
+        spriteBatch.draw(woodBlockTexture, 600, 75, 150, blockHeight);
+        spriteBatch.draw(glassTriangleTexture, 620, 107, 40, 40);
+        spriteBatch.draw(glassTriangleTexture, 690, 107, 40, 40);
+        spriteBatch.draw(pigTexture, 655, 105, 45, 45);
+        spriteBatch.draw(woodBlockTexture, 600, 140, 150, 20);
 
+        spriteBatch.draw(stoneCircleTexture, 620, 155, 40, 40);
+        spriteBatch.draw(stoneCircleTexture, 700, 155, 40, 40);
     }
+
 
     @Override
     public void resize(int width, int height) {

@@ -1,10 +1,15 @@
+back.png
 catapult.png
 choose_level.png
 choose_level_background.png
 easy.png
+easy_level_background.png
 exit.png
 glass_block.png
+glass_square_block.png
+glass_triangle_block.png
 hard.png
+hard_level_background.png
 home_background.png
 medium.png
 medium_level_background.png
@@ -19,6 +24,10 @@ restore.png
 resume.png
 resume_icon.png
 steel_block.png
+stone_circle_block.png
+stone_figure_block.png
+stone_square_block.png
+stone_triangle.png
 title.png
 vertical_wood_block.png
 wood_block.png

@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class EasyLevelScreen implements Screen {
+public class RestoreGame implements Screen{
     private final Main game;
     private Texture backgroundTexture;
     private Texture redBirdTexture, yellowBirdTexture, purpleBirdTexture;
@@ -22,18 +22,19 @@ public class EasyLevelScreen implements Screen {
     private Rectangle resumeButtonRectangle;
     private Vector2 touchPos;
 
-    public EasyLevelScreen(Main game) {
+    public RestoreGame(Main game) {
         this.game = game;
         create();
     }
 
     private void create() {
-        backgroundTexture = new Texture("easy_level_background.png");
+        backgroundTexture = new Texture("medium_level_background.png");
         redBirdTexture = new Texture("red_bird.png");
         yellowBirdTexture = new Texture("yellow_bird.png");
         purpleBirdTexture = new Texture("purple_bird.png");
         woodBlockTexture = new Texture("wood_block.png");
         glassBlockTexture = new Texture("glass_block.png");
+
         steelBlockTexture = new Texture("steel_block.png");
         pigTexture = new Texture("pig.png");
         catapultTexture = new Texture("catapult.png");
@@ -59,18 +60,6 @@ public class EasyLevelScreen implements Screen {
         draw();
     }
 
-    private void input() {
-        if (Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                System.out.println("Resume button clicked! Transitioning back.");
-                game.setScreen(new PauseScreen(game, this));
-                // Logic to resume or go to a different screen
-            }
-        }
-    }
-
     private void draw() {
         ScreenUtils.clear(Color.SKY);
         viewport.apply();
@@ -89,13 +78,13 @@ public class EasyLevelScreen implements Screen {
         spriteBatch.draw(purpleBirdCardTexture, 750, 410, 45, 60);
 
         // Hardcoded fonts
-        game.getFont().draw(spriteBatch, "Score: 0", 70, 445);
-        game.getFont().draw(spriteBatch, "2", 650, 423);
-        game.getFont().draw(spriteBatch, "2", 710, 423);
-        game.getFont().draw(spriteBatch, "1", 770, 423);
+        game.getFont().draw(spriteBatch, "Score: 457", 70, 445);
+        game.getFont().draw(spriteBatch, "0", 650, 423);
+        game.getFont().draw(spriteBatch, "1", 710, 423);
+        game.getFont().draw(spriteBatch, "0", 770, 423);
 
-        spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
-        spriteBatch.draw(redBirdTexture, 150, 130, 30, 30);
+        spriteBatch.draw(catapultTexture, 80, 75, 80, 80);
+        spriteBatch.draw(yellowBirdTexture, 50, 75, 30, 30);
 
         // Structure Drawing
         drawStructure();
@@ -108,35 +97,48 @@ public class EasyLevelScreen implements Screen {
     private void drawStructure() {
         int blockWidth = 60, blockHeight = 40;
 
+        // First (Bottom) Layer
         spriteBatch.draw(woodBlockTexture, 480, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 570, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 530, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 580, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 630, 75, blockWidth, blockHeight);
 
-        // Second Layer: Two vertical wood blocks on the sides
-        spriteBatch.draw(woodBlockTexture, 480, 85, blockWidth, blockHeight * 2); // Double height for vertical blocks
-        spriteBatch.draw(woodBlockTexture, 570, 85, blockWidth, blockHeight * 2);
+        // Second Layer
+//        spriteBatch.draw(woodBlockTexture, 480, 105, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlockTexture, 530, 105, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlockTexture, 585, 105, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 630, 105, blockWidth, blockHeight);
 
-        // Third Layer: One horizontal wood block
-        spriteBatch.draw(woodBlockTexture, 480, 145, blockWidth, blockHeight);
+        // Third Layer: One horizontal wood block in the center
+//        spriteBatch.draw(steelBlockTexture, 490,140, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlockTexture, 550,140, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlockTexture, 610,140, blockWidth, blockHeight);
 
-        // Fourth Layer: Two vertical glass blocks in the center
-        spriteBatch.draw(woodBlockTexture, 510, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 567, 200, blockWidth / 2, blockHeight * 2);
+        // Fourth Layer
+//        spriteBatch.draw(glassBlockTexture, 490, 180, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlockTexture, 615, 180, blockWidth, blockHeight);
 
-        // Fifth Layer: One horizontal wood block on top
-        spriteBatch.draw(woodBlockTexture, 570, 145, blockWidth, blockHeight);
+        // Top Layer
+//        spriteBatch.draw(woodBlockTexture, 490, 210, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlockTexture, 610, 210, blockWidth, blockHeight);
 
-        // Draw the pig in the middle of the top layer
-        spriteBatch.draw(pigTexture, 533, 212, 40, 40);
-
-        spriteBatch.draw(glassBlockTexture, 525, 175, blockWidth, blockHeight);
-
-        spriteBatch.draw(glassBlockTexture, 525, 265, blockWidth, blockHeight);
-
-
-
-
-
+        // Draw pigs: Three pigs placed symmetrically
+//        spriteBatch.draw(pigTexture, 561,175, 40, 40); // Center pig on top
+//        spriteBatch.draw(pigTexture, 500,241, 40, 40);
+        spriteBatch.draw(pigTexture, 620,241, 40, 40);
     }
+
+    private void input() {
+        if (Gdx.input.isTouched()) {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                System.out.println("Resume button clicked! Transitioning to PauseScreen.");
+                game.setScreen(new PauseScreen(game, this)); // Transition to the PauseScreen
+            }
+        }
+    }
+
 
     @Override
     public void resize(int width, int height) {

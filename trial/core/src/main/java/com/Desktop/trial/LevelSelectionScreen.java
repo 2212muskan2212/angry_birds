@@ -16,11 +16,14 @@ public class LevelSelectionScreen implements Screen {
     private final FitViewport viewport;
     private Texture backgroundTexture;
     private Texture chooseLevelTexture;
+    private Texture backTexture;
     private Texture easyTexture;
     private Texture mediumTexture;
     private Texture hardTexture;
+    private Rectangle backButtonRectangle;
     private Rectangle easyButtonRectangle;
     private Rectangle mediumButtonRectangle;
+    private Rectangle hardButtonRectangle;
     private Vector2 touchPos;
 
     public LevelSelectionScreen(Main game) {
@@ -28,12 +31,17 @@ public class LevelSelectionScreen implements Screen {
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480); // Adjust to your screen size
         backgroundTexture = new Texture("choose_level_background.png");
+        backTexture = new Texture("back.png");
         chooseLevelTexture = new Texture("choose_level.png");
         easyTexture = new Texture("easy.png");
         mediumTexture = new Texture("medium.png");
         hardTexture = new Texture("hard.png");
 
-        mediumButtonRectangle = new Rectangle(340, 195, 120, 35); // Position and size of Medium button
+
+        backButtonRectangle = new Rectangle(35, 410, 50,50);
+        easyButtonRectangle = new Rectangle(355, 290, 120, 45);
+        mediumButtonRectangle = new Rectangle(355, 235, 120, 45); // Position and size of Medium button
+        hardButtonRectangle = new Rectangle(355, 180, 120, 45);
         touchPos = new Vector2();
     }
 
@@ -54,16 +62,16 @@ public class LevelSelectionScreen implements Screen {
         // Draw the background
         spriteBatch.draw(backgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
 
-        // Draw "Choose Level" title, adjusted position
-        spriteBatch.draw(chooseLevelTexture, 270, 320, 250, 50);
+        spriteBatch.draw(backTexture, 35, 410,50,50);
+        spriteBatch.draw(chooseLevelTexture, 270, 370, 245, 75);
 
         // Draw level options
-        float buttonYStart = 250; // Starting Y position for the buttons
+        float buttonYStart = 290; // Starting Y position for the buttons
         float buttonSpacing = 20; // Space between buttons
 
-        spriteBatch.draw(easyTexture, 340, buttonYStart, 120, 35);
-        spriteBatch.draw(mediumTexture, 340, buttonYStart - (35 + buttonSpacing), 120, 35);
-        spriteBatch.draw(hardTexture, 340, buttonYStart - 2 * (35 + buttonSpacing), 120, 35);
+        spriteBatch.draw(easyTexture, 335, buttonYStart, 120, 45);
+        spriteBatch.draw(mediumTexture, 335, buttonYStart - (35 + buttonSpacing), 120, 45);
+        spriteBatch.draw(hardTexture, 335, buttonYStart - 2 * (35 + buttonSpacing), 120, 45);
 
         spriteBatch.end();
     }
@@ -72,8 +80,18 @@ public class LevelSelectionScreen implements Screen {
         if (Gdx.input.isTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
+            if (backButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                Gdx.app.log("Input", "Back button clicked");
+                game.setScreen(new HomeScreen(game)); // Switch to MediumLevelScreen
+            }
             if (mediumButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new MediumLevelScreen(game)); // Switch to MediumLevelScreen
+            }
+            if (easyButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new EasyLevelScreen(game)); // Switch to MediumLevelScreen
+            }
+            if (hardButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new HardLevelScreen(game)); // Switch to MediumLevelScreen
             }
 
         }
@@ -101,5 +119,6 @@ public class LevelSelectionScreen implements Screen {
         easyTexture.dispose();
         mediumTexture.dispose();
         hardTexture.dispose();
+        backTexture.dispose();
     }
 }

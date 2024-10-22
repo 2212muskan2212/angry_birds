@@ -19,6 +19,7 @@ public class HomeScreen implements Screen {
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
     private Rectangle playButtonRectangle;
+    private Rectangle restoreButtonRectangle;
     private Vector2 touchPos;
 
     public HomeScreen(Main game) {
@@ -30,10 +31,11 @@ public class HomeScreen implements Screen {
         backgroundTexture = new Texture("home_background.png");
         playButtonTexture = new Texture("play_button.png");
         restoreTexture = new Texture("restore.png");
-        titleTexture = new Texture("title.png");
+//        titleTexture = new Texture("title.png");
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
-        playButtonRectangle = new Rectangle(340, 280, 120, 35);
+        playButtonRectangle = new Rectangle(330, 280, 130, 40);
+        restoreButtonRectangle= new Rectangle(330, 230, 130, 40);
         touchPos = new Vector2();
     }
 
@@ -56,6 +58,9 @@ public class HomeScreen implements Screen {
             if (playButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new LevelSelectionScreen(game));
             }
+            else if (restoreButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new RestoreGame(game));
+            }
         }
     }
 
@@ -69,9 +74,10 @@ public class HomeScreen implements Screen {
         float worldHeight = viewport.getWorldHeight();
 
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-        spriteBatch.draw(titleTexture, 245, 370, 320, 80); // Draw the title
-        spriteBatch.draw(playButtonTexture, 340, 285, 110, 35); // Draw the play button
-        spriteBatch.draw(restoreTexture, 340, 235, 110, 35);
+//        spriteBatch.draw(titleTexture, 245, 370, 320, 80); // Draw the title
+        spriteBatch.draw(playButtonTexture, 330, 280, 130, 40); // Draw the play button
+        spriteBatch.draw(restoreTexture, 330, 230, 130, 40);
+
 
         spriteBatch.end();
     }
@@ -97,7 +103,7 @@ public class HomeScreen implements Screen {
     public void dispose() {
         backgroundTexture.dispose();
         playButtonTexture.dispose();
-        titleTexture.dispose();
+//        titleTexture.dispose();
         restoreTexture.dispose();
         spriteBatch.dispose();
     }

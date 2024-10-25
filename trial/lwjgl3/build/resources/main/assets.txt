@@ -11,6 +11,8 @@ glass_triangle_block.png
 hard.png
 hard_level_background.png
 home_background.png
+level_lost_button.png
+level_won_button.png
 medium.png
 medium_level_background.png
 pause_background.png

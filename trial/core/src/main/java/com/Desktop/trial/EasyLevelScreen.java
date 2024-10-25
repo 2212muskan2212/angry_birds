@@ -14,12 +14,13 @@ public class EasyLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
     private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture;
-    private Texture catapultTexture, resumeIconTexture;
+    private Texture catapultTexture, resumeIconTexture, wonTexture, lostTexture;
     private Bird redBird, yellowBird, purpleBird;
     private Pig pig;
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
     private Rectangle resumeButtonRectangle;
+    private Rectangle wonButtonRectangle, lostButtonRectangle;
     private Vector2 touchPos;
 
     public EasyLevelScreen(Main game) {
@@ -38,12 +39,16 @@ public class EasyLevelScreen implements Screen {
         steelBlockTexture = new Texture("steel_block.png");
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
+        wonTexture = new Texture("level_won_button.png");
+        lostTexture = new Texture("level_lost_button.png");
 
         pig = new Pig("pig.png");
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
         resumeButtonRectangle = new Rectangle(10, 410, 50, 50);
+        wonButtonRectangle = new Rectangle(325, 435, 73, 25);
+        lostButtonRectangle = new Rectangle(410, 435, 73, 25);
         touchPos = new Vector2();
     }
 
@@ -64,6 +69,12 @@ public class EasyLevelScreen implements Screen {
                 System.out.println("Resume button clicked! Transitioning back.");
                 game.setScreen(new PauseScreen(game, this));
             }
+//            else if (wonButtonRectangle.contains(touchPos.x, touchPos.y)) {
+//                game.setScreen(new LevelWonScreen(game));
+//            }
+//            else if (lostButtonRectangle.contains(touchPos.x, touchPos.y)) {
+//                game.setScreen(new LevelSLostScreen(game));
+//            }
         }
     }
 
@@ -92,6 +103,8 @@ public class EasyLevelScreen implements Screen {
 
         drawStructure();
         spriteBatch.draw(resumeIconTexture, 10, 410, 50, 50);
+        spriteBatch.draw(wonTexture, 325, 435, 73, 25);
+        spriteBatch.draw(lostTexture, 410, 435, 73, 25);
 
         spriteBatch.end();
     }

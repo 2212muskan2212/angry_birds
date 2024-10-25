@@ -24,10 +24,10 @@ restore.png
 resume.png
 resume_icon.png
 steel_block.png
-stone_circle_block.png
-stone_figure_block.png
-stone_square_block.png
-stone_triangle.png
+steel_circle_block.png
+steel_figure_block.png
+steel_square_block.png
+steel_triangle_block.png
 title.png
 vertical_wood_block.png
 wood_block.png

@@ -13,10 +13,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class MediumLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
-    private Texture redBirdTexture, yellowBirdTexture, purpleBirdTexture;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture, glassTriangleTexture, stoneCircleTexture;
-    private Texture pigTexture, catapultTexture, resumeIconTexture;
-    private Texture redBirdCardTexture, yellowBirdCardTexture, purpleBirdCardTexture;
+    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture, glassTriangleTexture, steelCircleTexture;
+    private Texture catapultTexture, resumeIconTexture;
+    private Bird redBird, yellowBird, purpleBird;
+    private Pig pig;
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
     private Rectangle resumeButtonRectangle;
@@ -28,22 +28,21 @@ public class MediumLevelScreen implements Screen {
     }
 
     private void create() {
+        redBird = new Bird("red_bird.png", "red_bird_card.png");
+        yellowBird = new Bird("yellow_bird.png", "yellow_bird_card.png");
+        purpleBird = new Bird("purple_bird.png", "purple_bird_card.png");
+
         backgroundTexture = new Texture("medium_level_background.png");
-        redBirdTexture = new Texture("red_bird.png");
-        yellowBirdTexture = new Texture("yellow_bird.png");
-        purpleBirdTexture = new Texture("purple_bird.png");
         woodBlockTexture = new Texture("wood_block.png");
         glassBlockTexture = new Texture("glass_block.png");
         steelBlockTexture = new Texture("steel_block.png");
-        pigTexture = new Texture("pig.png");
+
+        pig = new Pig("pig.png");
+
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
-        redBirdCardTexture = new Texture("red_bird_card.png");
-        yellowBirdCardTexture = new Texture("yellow_bird_card.png");
-        purpleBirdCardTexture = new Texture("purple_bird_card.png");
         glassTriangleTexture = new Texture("glass_triangle_block.png");
-        stoneCircleTexture = new Texture("stone_circle_block.png");
-
+        steelCircleTexture = new Texture("steel_circle_block.png");
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
@@ -86,9 +85,9 @@ public class MediumLevelScreen implements Screen {
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
         // Draw bird cards in top right corner
-        spriteBatch.draw(redBirdCardTexture, 630, 410, 45, 60);
-        spriteBatch.draw(yellowBirdCardTexture, 690, 410, 45, 60);
-        spriteBatch.draw(purpleBirdCardTexture, 750, 410, 45, 60);
+        spriteBatch.draw(redBird.getBirdCardTexture(), 630, 410, 45, 60);
+        spriteBatch.draw(yellowBird.getBirdCardTexture(), 690, 410, 45, 60);
+        spriteBatch.draw(purpleBird.getBirdCardTexture(), 750, 410, 45, 60);
 
         // Hardcoded fonts
         game.getFont().draw(spriteBatch, "Score: 338", 70, 445);
@@ -97,7 +96,7 @@ public class MediumLevelScreen implements Screen {
         game.getFont().draw(spriteBatch, "1", 770, 423);
 
         spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
-        spriteBatch.draw(redBirdTexture, 50, 75, 30, 30);
+        spriteBatch.draw(redBird.getBirdTexture(), 50, 75, 30, 30);
 
         // Structure Drawing
         drawStructure();
@@ -136,9 +135,9 @@ public class MediumLevelScreen implements Screen {
         spriteBatch.draw(woodBlockTexture, 610, 210, blockWidth, blockHeight);
 
         // Draw pigs: Three pigs placed symmetrically
-        spriteBatch.draw(pigTexture, 564,210, 36, 36); // Center pig on top
-        spriteBatch.draw(pigTexture, 500,241, 36, 36);
-        spriteBatch.draw(pigTexture, 620,241, 36, 36);
+        spriteBatch.draw(pig.getPigTexture(), 564,210, 36, 36);
+        spriteBatch.draw(pig.getPigTexture(), 500,241, 36, 36);
+        spriteBatch.draw(pig.getPigTexture(), 620,241, 36, 36);
 
         spriteBatch.draw(woodBlockTexture, 495, 230, blockWidth / 5, blockHeight * 2);
         spriteBatch.draw(woodBlockTexture, 530, 230, blockWidth / 5, blockHeight * 2);
@@ -149,11 +148,8 @@ public class MediumLevelScreen implements Screen {
         spriteBatch.draw(glassTriangleTexture, 495, 297, 50, 50);
         spriteBatch.draw(glassTriangleTexture, 615, 297, 50, 50);
 
-        spriteBatch.draw(stoneCircleTexture, 545, 177, 40, 40);
-        spriteBatch.draw(stoneCircleTexture, 580, 177, 40, 40);
-
-
-
+        spriteBatch.draw(steelCircleTexture, 545, 177, 40, 40);
+        spriteBatch.draw(steelCircleTexture, 580, 177, 40, 40);
     }
 
     @Override
@@ -176,18 +172,18 @@ public class MediumLevelScreen implements Screen {
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        redBirdTexture.dispose();
-        yellowBirdTexture.dispose();
-        purpleBirdTexture.dispose();
+        redBird.getBirdTexture().dispose();
+        yellowBird.getBirdTexture().dispose();
+        purpleBird.getBirdTexture().dispose();
+        redBird.getBirdCardTexture().dispose();
+        yellowBird.getBirdCardTexture().dispose();
+        purpleBird.getBirdCardTexture().dispose();
         woodBlockTexture.dispose();
         glassBlockTexture.dispose();
         steelBlockTexture.dispose();
-        pigTexture.dispose();
+        pig.dispose();
         catapultTexture.dispose();
         resumeIconTexture.dispose();
-        redBirdCardTexture.dispose();
-        yellowBirdCardTexture.dispose();
-        purpleBirdCardTexture.dispose();
         spriteBatch.dispose();
     }
 }

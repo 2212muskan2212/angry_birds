@@ -13,7 +13,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class EasyLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture;
+    //private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture;
+    private WoodBlock woodBlock1,woodBlock2,woodBlock3,woodBlock4,woodBlock5,woodBlock6,woodBlock7,woodBlock8;
+    private GlassBlock glassBlock1,glassBlock2;
+    private SteelBlock steelBlock;
     private Texture catapultTexture, resumeIconTexture, wonTexture, lostTexture;
     private Bird redBird, yellowBird, purpleBird;
     private Pig pig;
@@ -34,9 +37,20 @@ public class EasyLevelScreen implements Screen {
         yellowBird = new Bird("yellow_bird.png", "yellow_bird_card.png");
         purpleBird = new Bird("purple_bird.png", "purple_bird_card.png");
 
-        woodBlockTexture = new Texture("wood_block.png");
+        /*woodBlockTexture = new Texture("wood_block.png");
         glassBlockTexture = new Texture("glass_block.png");
-        steelBlockTexture = new Texture("steel_block.png");
+        steelBlockTexture = new Texture("steel_block.png");*/
+        woodBlock1 = new WoodBlock("wood_block.png");
+        woodBlock2 = new WoodBlock("wood_block.png");
+        woodBlock3 = new WoodBlock("wood_block.png");
+        woodBlock4 = new WoodBlock("wood_block.png");
+        woodBlock5 = new WoodBlock("wood_block.png");
+        woodBlock6 = new WoodBlock("wood_block.png");
+        woodBlock7 = new WoodBlock("wood_block.png");
+        woodBlock8 = new WoodBlock("wood_block.png");
+        glassBlock1 = new GlassBlock("glass_block.png");
+        glassBlock2 = new GlassBlock("glass_block.png");
+
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
         wonTexture = new Texture("level_won_button.png");
@@ -68,13 +82,14 @@ public class EasyLevelScreen implements Screen {
             if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 System.out.println("Resume button clicked! Transitioning back.");
                 game.setScreen(new PauseScreen(game, this));
+//                game.setScreen(new PauseScreen(game));
             }
-//            else if (wonButtonRectangle.contains(touchPos.x, touchPos.y)) {
-//                game.setScreen(new LevelWonScreen(game));
-//            }
-//            else if (lostButtonRectangle.contains(touchPos.x, touchPos.y)) {
-//                game.setScreen(new LevelSLostScreen(game));
-//            }
+            else if (wonButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new LevelCompletedScreen(game));
+            }
+            else if (lostButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new LevelLostScreen(game));
+            }
         }
     }
 
@@ -112,21 +127,21 @@ public class EasyLevelScreen implements Screen {
     private void drawStructure() {
         int blockWidth = 60, blockHeight = 40;
 
-        spriteBatch.draw(woodBlockTexture, 480, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 570, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock1.getBlockTexture(), 480, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock2.getBlockTexture(), 570, 75, blockWidth, blockHeight);
 
-        spriteBatch.draw(woodBlockTexture, 480, 85, blockWidth, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 570, 85, blockWidth, blockHeight * 2);
+        spriteBatch.draw(woodBlock3.getBlockTexture(), 480, 85, blockWidth, blockHeight * 2);
+        spriteBatch.draw(woodBlock4.getBlockTexture(), 570, 85, blockWidth, blockHeight * 2);
 
-        spriteBatch.draw(woodBlockTexture, 480, 145, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 510, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 567, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 570, 145, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock5.getBlockTexture(), 480, 145, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock6.getBlockTexture(), 510, 200, blockWidth / 2, blockHeight * 2);
+        spriteBatch.draw(woodBlock7.getBlockTexture(), 567, 200, blockWidth / 2, blockHeight * 2);
+        spriteBatch.draw(woodBlock8.getBlockTexture(), 570, 145, blockWidth, blockHeight);
 
         spriteBatch.draw(pig.getPigTexture(), 533, 212, 40, 40);
 
-        spriteBatch.draw(glassBlockTexture, 525, 175, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlockTexture, 525, 265, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock1.getBlockTexture(), 525, 175, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock2.getBlockTexture(), 525, 265, blockWidth, blockHeight);
     }
 
     @Override
@@ -149,9 +164,16 @@ public class EasyLevelScreen implements Screen {
         redBird.dispose();
         yellowBird.dispose();
         purpleBird.dispose();
-        woodBlockTexture.dispose();
-        glassBlockTexture.dispose();
-        steelBlockTexture.dispose();
+        woodBlock1.dispose();
+        woodBlock2.dispose();
+        woodBlock3.dispose();
+        woodBlock4.dispose();
+        woodBlock5.dispose();
+        woodBlock6.dispose();
+        woodBlock7.dispose();
+        woodBlock8.dispose();
+        glassBlock1.dispose();
+        glassBlock2.dispose();
         catapultTexture.dispose();
         resumeIconTexture.dispose();
         pig.dispose();

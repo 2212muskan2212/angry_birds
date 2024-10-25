@@ -10,69 +10,59 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class PauseScreen implements Screen {
+public class LevelCompletedScreen implements Screen {
     private final Main game;
-    private final Screen previousScreen;
     private final SpriteBatch spriteBatch;
     private final FitViewport viewport;
-    private Texture backgroundTexture;
-    private Texture resumeTexture;
-    private Texture exitTexture;
-    private Rectangle resumeButtonRectangle;
-    private Rectangle exitButtonRectangle;
-    private Vector2 touchPos;
+    private final Texture backgroundTexture;
+    private final Texture levelCompletedTexture;
+    private final Texture nextIconTexture;
+    private final Texture menuIconTexture;
+    private final Rectangle nextButtonRectangle;
+    private final Rectangle menuButtonRectangle;
+    private final Vector2 touchPos;
 
-    public PauseScreen(Main game, Screen previousScreen) {
+    public LevelCompletedScreen(Main game) {
         this.game = game;
-        this.previousScreen = previousScreen;
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
-        backgroundTexture = new Texture("pause_background.png");
-        resumeTexture = new Texture("resume.png");
-        exitTexture = new Texture("exit.png");
-        resumeButtonRectangle = new Rectangle(325, 250, 150, 60);
-        exitButtonRectangle = new Rectangle(325, 170, 140, 57);
+        backgroundTexture = new Texture("level_completed_background.png");
+        levelCompletedTexture = new Texture("level_completed.png");
+        nextIconTexture = new Texture("next_icon.png");
+        menuIconTexture = new Texture("menu_icon.png");
+
+        nextButtonRectangle = new Rectangle(412, 130, 57, 30);
+        menuButtonRectangle = new Rectangle(335, 130, 57, 31);
+
         touchPos = new Vector2();
     }
 
     @Override
-    public void show() {
-        // Code to run when the screen is shown
-    }
+    public void show() { }
 
     @Override
     public void render(float delta) {
-        handleInput();
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
-        // Draw the background
+        // Draw the textures
         spriteBatch.draw(backgroundTexture, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-
-        // Draw the "Resume" and "Exit" buttons at the center
-        float buttonYStart = 250;
-        float buttonSpacing = 30;
-        float buttonWidth = 160;
-        float buttonHeight = 60;
-
-
-        spriteBatch.draw(resumeTexture, 325, buttonYStart, buttonWidth, buttonHeight);
-
-        spriteBatch.draw(exitTexture, 325, buttonYStart - (buttonHeight + buttonSpacing), buttonWidth, 57);
+        spriteBatch.draw(levelCompletedTexture, 202, 100, 400, 285);
+        spriteBatch.draw(menuIconTexture, 335, 130, 57, 31);
+        spriteBatch.draw(nextIconTexture, 412, 130, 57, 30);
 
         spriteBatch.end();
-    }
 
-    private void handleInput() {
+        // Handle touch input
         if (Gdx.input.isTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
 
-            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(previousScreen);
-            } else if (exitButtonRectangle.contains(touchPos.x, touchPos.y)) {
+            if (nextButtonRectangle.contains(touchPos.x, touchPos.y)) {
+                game.setScreen(new MediumLevelScreen(game));
+            } else if (menuButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new LevelSelectionScreen(game));
             }
         }
@@ -96,7 +86,8 @@ public class PauseScreen implements Screen {
     public void dispose() {
         spriteBatch.dispose();
         backgroundTexture.dispose();
-        resumeTexture.dispose();
-        exitTexture.dispose();
+        levelCompletedTexture.dispose();
+        nextIconTexture.dispose();
+        menuIconTexture.dispose();
     }
 }

@@ -15,7 +15,12 @@ public class HardLevelScreen implements Screen {
     private Texture backgroundTexture;
     private Bird redBird, yellowBird, purpleBird;
     private Pig pig;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture,glassTriangleTexture, steelCircleTexture;
+    //private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture,glassTriangleTexture, steelCircleTexture;
+    private WoodBlock woodBlock1,woodBlock2,woodBlock3,woodBlock4,woodBlock5,woodBlock6,woodBlock7,woodBlock8,woodBlock9,woodBlock10,woodBlock11,woodBlock12,woodBlock13,woodBlock14;
+    private GlassBlock glassBlock1,glassBlock2;
+    private GlassBlock glassTriangleBlock1,glassTriangleBlock2,glassTriangleBlock3,glassTriangleBlock4;
+    private SteelBlock steelBlock1,steelBlock2;
+    private SteelBlock steelCircleBlock1,steelCircleBlock2;
     private Texture catapultTexture, resumeIconTexture;
     private SpriteBatch spriteBatch;
     private FitViewport viewport;
@@ -33,16 +38,44 @@ public class HardLevelScreen implements Screen {
         purpleBird = new Bird("purple_bird.png", "purple_bird_card.png");
 
         backgroundTexture = new Texture("hard_level_background.png");
-        woodBlockTexture = new Texture("wood_block.png");
-        glassBlockTexture = new Texture("glass_block.png");
-        steelBlockTexture = new Texture("steel_block.png");
+        woodBlock1 = new WoodBlock("wood_block.png");
+        woodBlock2 = new WoodBlock("wood_block.png");
+        woodBlock3 = new WoodBlock("wood_block.png");
+        woodBlock4 = new WoodBlock("wood_block.png");
+        woodBlock5 = new WoodBlock("wood_block.png");
+        woodBlock6 = new WoodBlock("wood_block.png");
+        woodBlock7 = new WoodBlock("wood_block.png");
+        woodBlock8 = new WoodBlock("wood_block.png");
+        woodBlock9 = new WoodBlock("wood_block.png");
+        woodBlock10 = new WoodBlock("wood_block.png");
+        woodBlock11 = new WoodBlock("wood_block.png");
+        woodBlock12 = new WoodBlock("wood_block.png");
+        woodBlock13 = new WoodBlock("wood_block.png");
+        woodBlock14 = new WoodBlock("wood_block.png");
+        glassBlock1 = new GlassBlock("glass_block.png");
+        glassBlock2 = new GlassBlock("glass_block.png");
+        glassTriangleBlock1 = new GlassBlock("glass_triangle_block.png");
+        glassTriangleBlock2 = new GlassBlock("glass_triangle_block.png");
+        glassTriangleBlock3 = new GlassBlock("glass_triangle_block.png");
+        glassTriangleBlock4 = new GlassBlock("glass_triangle_block.png");
+        steelBlock1 = new SteelBlock("steel_block.png");
+        steelBlock2 = new SteelBlock("steel_block.png");
+        steelCircleBlock1 = new SteelBlock("steel_circle_block.png");
+        steelCircleBlock2 = new SteelBlock("steel_circle_block.png");
+
+
+
+
+        //woodBlockTexture = new Texture("wood_block.png");
+        //glassBlockTexture = new Texture("glass_block.png");
+        //steelBlockTexture = new Texture("steel_block.png");
 
         pig = new Pig("pig.png");
 
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
-        glassTriangleTexture = new Texture("glass_triangle_block.png");
-        steelCircleTexture = new Texture("steel_circle_block.png");
+        //glassTriangleTexture = new Texture("glass_triangle_block.png");
+        //steelCircleTexture = new Texture("steel_circle_block.png");
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
@@ -66,9 +99,7 @@ public class HardLevelScreen implements Screen {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
             if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                System.out.println("Resume button clicked! Transitioning back.");
                 game.setScreen(new PauseScreen(game, this));
-                // Logic to resume or go to a different screen
             }
         }
     }
@@ -111,37 +142,37 @@ public class HardLevelScreen implements Screen {
         int blockWidth = 60, blockHeight = 40;
 
         // First (Bottom) Layer: Wooden blocks
-        spriteBatch.draw(woodBlockTexture, 500, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 560, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock1.getBlockTexture(), 500, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock2.getBlockTexture(), 560, 75, blockWidth, blockHeight);
 
         // Second Layer: Glass blocks on top of wood, supporting the pigs
-        spriteBatch.draw(glassBlockTexture, 500, 107, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlockTexture, 560, 107, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock1.getBlockTexture(), 500, 107, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock2.getBlockTexture(), 560, 107, blockWidth, blockHeight);
 
         // Draw the first pig in the middle between two glass blocks
         spriteBatch.draw(pig.getPigTexture(), 510, 149, 45, 45);
 
         // Third Layer: Steel blocks on top of glass for more durability
-        spriteBatch.draw(steelBlockTexture, 500, 200, blockWidth, blockHeight);
-        spriteBatch.draw(steelBlockTexture, 560, 200, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlock1.getBlockTexture(), 500, 200, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlock2.getBlockTexture(), 560, 200, blockWidth, blockHeight);
 
         // Fourth Layer: Two horizontal wooden blocks on top of steel
-        spriteBatch.draw(woodBlockTexture, 494, 230, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 566, 230, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock3.getBlockTexture(), 494, 230, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock4.getBlockTexture(), 566, 230, blockWidth, blockHeight);
 
         // Fifth Layer: More pigs at the top
         spriteBatch.draw(pig.getPigTexture(), 513, 260, 40, 40);
         spriteBatch.draw(pig.getPigTexture(), 568, 260, 40, 40);
 
-        spriteBatch.draw(woodBlockTexture, 500, 249, blockWidth / 3, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 550, 220, blockWidth / 3, blockHeight * 3);
-        spriteBatch.draw(woodBlockTexture, 600, 249, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlock5.getBlockTexture(), 500, 249, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlock6.getBlockTexture(), 550, 220, blockWidth / 3, blockHeight * 3);
+        spriteBatch.draw(woodBlock7.getBlockTexture(), 600, 249, blockWidth / 3, blockHeight * 2);
         //slim wood blocks
-        spriteBatch.draw(woodBlockTexture, 495, 130, blockWidth / 3, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 545, 130, blockWidth / 3, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 600, 130, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlock8.getBlockTexture(), 495, 130, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlock9.getBlockTexture(), 545, 130, blockWidth / 3, blockHeight * 2);
+        spriteBatch.draw(woodBlock10.getBlockTexture(), 600, 130, blockWidth / 3, blockHeight * 2);
 
-        spriteBatch.draw(woodBlockTexture, 490, 310, 150, blockHeight);
+        spriteBatch.draw(woodBlock11.getBlockTexture(), 490, 310, 150, blockHeight);
         // Support columns on both sides (vertical wood)
         //spriteBatch.draw(woodBlockTexture, 460, 75, blockWidth / 2, 150); // Left column
         //spriteBatch.draw(woodBlockTexture, 640, 75, blockWidth / 2, 150); // Right column
@@ -149,22 +180,22 @@ public class HardLevelScreen implements Screen {
         // Draw the first pig in the middle between two glass blocks
         spriteBatch.draw(pig.getPigTexture(), 560, 149, 45, 45);
 
-        spriteBatch.draw(glassTriangleTexture, 578, 343, 40, 40);
-        spriteBatch.draw(glassTriangleTexture, 510, 343, 40, 40);
+        spriteBatch.draw(glassTriangleBlock1.getBlockTexture(), 578, 343, 40, 40);
+        spriteBatch.draw(glassTriangleBlock2.getBlockTexture(), 510, 343, 40, 40);
         spriteBatch.draw(pig.getPigTexture(), 544, 343, 40, 40);
-        spriteBatch.draw(woodBlockTexture, 495, 375, 150, 20);
+        spriteBatch.draw(woodBlock12.getBlockTexture(), 495, 375, 150, 20);
 
         //spriteBatch.draw(steelCircleTexture, 500, 390, 40, 40);
         //spriteBatch.draw(steelCircleTexture, 600, 390, 40, 40);
 
-        spriteBatch.draw(woodBlockTexture, 600, 75, 150, blockHeight);
-        spriteBatch.draw(glassTriangleTexture, 620, 107, 40, 40);
-        spriteBatch.draw(glassTriangleTexture, 690, 107, 40, 40);
+        spriteBatch.draw(woodBlock13.getBlockTexture(), 600, 75, 150, blockHeight);
+        spriteBatch.draw(glassTriangleBlock3.getBlockTexture(), 620, 107, 40, 40);
+        spriteBatch.draw(glassTriangleBlock4.getBlockTexture(), 690, 107, 40, 40);
         spriteBatch.draw(pig.getPigTexture(), 655, 105, 45, 45);
-        spriteBatch.draw(woodBlockTexture, 600, 140, 150, 20);
+        spriteBatch.draw(woodBlock14.getBlockTexture(), 600, 140, 150, 20);
 
-        spriteBatch.draw(steelCircleTexture, 620, 155, 40, 40);
-        spriteBatch.draw(steelCircleTexture, 700, 155, 40, 40);
+        spriteBatch.draw(steelCircleBlock1.getBlockTexture(), 620, 155, 40, 40);
+        spriteBatch.draw(steelCircleBlock2.getBlockTexture(), 700, 155, 40, 40);
     }
 
 
@@ -194,9 +225,30 @@ public class HardLevelScreen implements Screen {
         redBird.getBirdCardTexture().dispose();
         yellowBird.getBirdCardTexture().dispose();
         purpleBird.getBirdCardTexture().dispose();
-        woodBlockTexture.dispose();
-        glassBlockTexture.dispose();
-        steelBlockTexture.dispose();
+        woodBlock1.dispose();
+        woodBlock2.dispose();
+        woodBlock3.dispose();
+        woodBlock4.dispose();
+        woodBlock5.dispose();
+        woodBlock6.dispose();
+        woodBlock7.dispose();
+        woodBlock8.dispose();
+        woodBlock9.dispose();
+        woodBlock10.dispose();
+        woodBlock11.dispose();
+        woodBlock12.dispose();
+        woodBlock13.dispose();
+        woodBlock14.dispose();
+        glassBlock1.dispose();
+        glassBlock2.dispose();
+        glassTriangleBlock1.dispose();
+        glassTriangleBlock2.dispose();
+        glassTriangleBlock3.dispose();
+        glassTriangleBlock4.dispose();
+        steelBlock1.dispose();
+        steelBlock2.dispose();
+        steelCircleBlock1.dispose();
+        steelCircleBlock2.dispose();
         pig.dispose();
         catapultTexture.dispose();
         resumeIconTexture.dispose();

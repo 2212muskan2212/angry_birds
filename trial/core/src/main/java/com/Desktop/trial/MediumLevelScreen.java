@@ -13,7 +13,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class MediumLevelScreen implements Screen {
     private final Main game;
     private Texture backgroundTexture;
-    private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture, glassTriangleTexture, steelCircleTexture;
+    //private Texture woodBlockTexture, glassBlockTexture, steelBlockTexture, glassTriangleTexture, steelCircleTexture;
+    private WoodBlock woodBlock1,woodBlock2,woodBlock3,woodBlock4,woodBlock5,woodBlock6,woodBlock7,woodBlock8,woodBlock9,woodBlock10,woodBlock11,woodBlock12;
+    private GlassBlock glassBlock1,glassBlock2,glassBlock3,glassBlock4;
+    private GlassBlock glassTriangleBlock1,glassTriangleBlock2;
+    private SteelBlock steelBlock1,steelBlock2,steelBlock3;
+    private SteelBlock steelCircleBlock1,steelCircleBlock2;
+
     private Texture catapultTexture, resumeIconTexture;
     private Bird redBird, yellowBird, purpleBird;
     private Pig pig;
@@ -33,16 +39,36 @@ public class MediumLevelScreen implements Screen {
         purpleBird = new Bird("purple_bird.png", "purple_bird_card.png");
 
         backgroundTexture = new Texture("medium_level_background.png");
-        woodBlockTexture = new Texture("wood_block.png");
-        glassBlockTexture = new Texture("glass_block.png");
-        steelBlockTexture = new Texture("steel_block.png");
+        woodBlock1 = new WoodBlock("wood_block.png");
+        woodBlock2 = new WoodBlock("wood_block.png");
+        woodBlock3 = new WoodBlock("wood_block.png");
+        woodBlock4 = new WoodBlock("wood_block.png");
+        woodBlock5 = new WoodBlock("wood_block.png");
+        woodBlock6 = new WoodBlock("wood_block.png");
+        woodBlock7 = new WoodBlock("wood_block.png");
+        woodBlock8 = new WoodBlock("wood_block.png");
+        woodBlock9 = new WoodBlock("wood_block.png");
+        woodBlock10 = new WoodBlock("wood_block.png");
+        woodBlock11 = new WoodBlock("wood_block.png");
+        woodBlock12 = new WoodBlock("wood_block.png");
+        glassBlock1 = new GlassBlock("glass_block.png");
+        glassBlock2 = new GlassBlock("glass_block.png");
+        glassBlock3 = new GlassBlock("glass_block.png");
+        glassBlock4 = new GlassBlock("glass_block.png");
+        glassTriangleBlock1 = new GlassBlock("glass_triangle_block.png");
+        glassTriangleBlock2 = new GlassBlock("glass_triangle_block.png");
+        steelBlock1 = new SteelBlock("steel_block.png");
+        steelBlock2 = new SteelBlock("steel_block.png");
+        steelBlock3 = new SteelBlock("steel_block.png");
+        steelCircleBlock1 = new SteelBlock("steel_circle_block.png");
+        steelCircleBlock2 = new SteelBlock("steel_circle_block.png");
 
         pig = new Pig("pig.png");
 
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
-        glassTriangleTexture = new Texture("glass_triangle_block.png");
-        steelCircleTexture = new Texture("steel_circle_block.png");
+        //glassTriangleTexture = new Texture("glass_triangle_block.png");
+        //steelCircleTexture = new Texture("steel_circle_block.png");
 
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(800, 480);
@@ -66,7 +92,7 @@ public class MediumLevelScreen implements Screen {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
             if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                System.out.println("Resume button clicked! Transitioning back.");
+//                System.out.println("Resume button clicked! Transitioning back.");
                 game.setScreen(new PauseScreen(game, this));
             }
         }
@@ -110,46 +136,46 @@ public class MediumLevelScreen implements Screen {
         int blockWidth = 60, blockHeight = 40;
 
         // First (Bottom) Layer
-        spriteBatch.draw(woodBlockTexture, 480, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 530, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 580, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 630, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock1.getBlockTexture(), 480, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock2.getBlockTexture(), 530, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock3.getBlockTexture(), 580, 75, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock4.getBlockTexture(), 630, 75, blockWidth, blockHeight);
 
         // Second Layer
-        spriteBatch.draw(woodBlockTexture, 480, 105, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlockTexture, 530, 105, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlockTexture, 585, 105, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 630, 105, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock5.getBlockTexture(), 480, 105, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock1.getBlockTexture(), 530, 105, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock2.getBlockTexture(), 585, 105, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock6.getBlockTexture(), 630, 105, blockWidth, blockHeight);
 
         // Third Layer: One horizontal wood block in the center
-        spriteBatch.draw(steelBlockTexture, 490,140, blockWidth, blockHeight);
-        spriteBatch.draw(steelBlockTexture, 550,140, blockWidth, blockHeight);
-        spriteBatch.draw(steelBlockTexture, 610,140, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlock1.getBlockTexture(), 490,140, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlock2.getBlockTexture(), 550,140, blockWidth, blockHeight);
+        spriteBatch.draw(steelBlock3.getBlockTexture(), 610,140, blockWidth, blockHeight);
 
         // Fourth Layer
-        spriteBatch.draw(glassBlockTexture, 490, 180, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlockTexture, 615, 180, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock3.getBlockTexture(), 490, 180, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock4.getBlockTexture(), 615, 180, blockWidth, blockHeight);
 
         // Top Layer
-        spriteBatch.draw(woodBlockTexture, 490, 210, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlockTexture, 610, 210, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock7.getBlockTexture(), 490, 210, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock8.getBlockTexture(), 610, 210, blockWidth, blockHeight);
 
         // Draw pigs: Three pigs placed symmetrically
         spriteBatch.draw(pig.getPigTexture(), 564,210, 36, 36);
         spriteBatch.draw(pig.getPigTexture(), 500,241, 36, 36);
         spriteBatch.draw(pig.getPigTexture(), 620,241, 36, 36);
 
-        spriteBatch.draw(woodBlockTexture, 495, 230, blockWidth / 5, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 530, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlock9.getBlockTexture(), 495, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlock10.getBlockTexture(), 530, 230, blockWidth / 5, blockHeight * 2);
 
-        spriteBatch.draw(woodBlockTexture, 613, 230, blockWidth / 5, blockHeight * 2);
-        spriteBatch.draw(woodBlockTexture, 650, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlock11.getBlockTexture(), 613, 230, blockWidth / 5, blockHeight * 2);
+        spriteBatch.draw(woodBlock12.getBlockTexture(), 650, 230, blockWidth / 5, blockHeight * 2);
 
-        spriteBatch.draw(glassTriangleTexture, 495, 297, 50, 50);
-        spriteBatch.draw(glassTriangleTexture, 615, 297, 50, 50);
+        spriteBatch.draw(glassTriangleBlock1.getBlockTexture(), 495, 297, 50, 50);
+        spriteBatch.draw(glassTriangleBlock2.getBlockTexture(), 615, 297, 50, 50);
 
-        spriteBatch.draw(steelCircleTexture, 545, 177, 40, 40);
-        spriteBatch.draw(steelCircleTexture, 580, 177, 40, 40);
+        spriteBatch.draw(steelCircleBlock1.getBlockTexture(), 545, 177, 40, 40);
+        spriteBatch.draw(steelCircleBlock2.getBlockTexture(), 580, 177, 40, 40);
     }
 
     @Override
@@ -178,9 +204,29 @@ public class MediumLevelScreen implements Screen {
         redBird.getBirdCardTexture().dispose();
         yellowBird.getBirdCardTexture().dispose();
         purpleBird.getBirdCardTexture().dispose();
-        woodBlockTexture.dispose();
-        glassBlockTexture.dispose();
-        steelBlockTexture.dispose();
+        woodBlock1.dispose();
+        woodBlock2.dispose();
+        woodBlock3.dispose();
+        woodBlock4.dispose();
+        woodBlock5.dispose();
+        woodBlock6.dispose();
+        woodBlock7.dispose();
+        woodBlock8.dispose();
+        woodBlock9.dispose();
+        woodBlock10.dispose();
+        woodBlock11.dispose();
+        woodBlock12.dispose();
+        glassBlock1.dispose();
+        glassBlock2.dispose();
+        glassBlock3.dispose();
+        glassBlock4.dispose();
+        glassTriangleBlock1.dispose();
+        glassTriangleBlock2.dispose();
+        steelBlock1.dispose();
+        steelBlock2.dispose();
+        steelBlock3.dispose();
+        steelCircleBlock1.dispose();
+        steelCircleBlock2.dispose();
         pig.dispose();
         catapultTexture.dispose();
         resumeIconTexture.dispose();

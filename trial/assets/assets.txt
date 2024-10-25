@@ -1,3 +1,4 @@
+angry_birds_music.mp3
 back.png
 catapult.png
 choose_level.png
@@ -11,10 +12,17 @@ glass_triangle_block.png
 hard.png
 hard_level_background.png
 home_background.png
+level_completed.png
+level_completed_background.png
+level_lost.png
+level_lost_background.png
 level_lost_button.png
 level_won_button.png
 medium.png
 medium_level_background.png
+menu_icon.png
+mute.png
+next_icon.png
 pause_background.png
 pig.png
 play_button.png
@@ -25,12 +33,14 @@ red_bird_card.png
 restore.png
 resume.png
 resume_icon.png
+retry_icon.png
 steel_block.png
 steel_circle_block.png
 steel_figure_block.png
 steel_square_block.png
 steel_triangle_block.png
 title.png
+unmute.png
 vertical_wood_block.png
 wood_block.png
 yellow_bird.png

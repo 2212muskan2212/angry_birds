@@ -1,26 +1,19 @@
 package com.Desktop.trial;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 
-public abstract class Block {
-    protected Texture texture;
-    protected Vector2 position;
+public class Block {
+    private Texture blockTexture;
 
-    public Block(Texture texture, Vector2 position) {
-        this.texture = texture;
-        this.position = position;
+    public Block(String texturePath) {
+        blockTexture = new Texture(texturePath);
     }
 
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public Vector2 getPosition() {
-        return position;
+    public Texture getBlockTexture() {
+        return blockTexture;
     }
 
     public void dispose() {
-        texture.dispose();
+        blockTexture.dispose();
     }
 }

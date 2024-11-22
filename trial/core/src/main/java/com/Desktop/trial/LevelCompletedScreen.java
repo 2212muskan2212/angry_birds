@@ -61,7 +61,7 @@ public class LevelCompletedScreen implements Screen {
             viewport.unproject(touchPos);
 
             if (nextButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new MediumLevelScreen(game));
+//                game.setScreen(new MediumLevelScreen(game));
             } else if (menuButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new LevelSelectionScreen(game));
             }

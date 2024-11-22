@@ -96,13 +96,13 @@ public class LevelSelectionScreen implements Screen {
                 game.setScreen(new HomeScreen(game));
             }
             if (mediumButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new MediumLevelScreen(game));
+//                game.setScreen(new MediumLevelScreen(game));
             }
             if (easyButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new EasyLevelScreen(game));
             }
             if (hardButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new HardLevelScreen(game));
+//                game.setScreen(new HardLevelScreen(game));
             }
             if (unmuteButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 toggleMusic(); // Toggle music when the button is clicked

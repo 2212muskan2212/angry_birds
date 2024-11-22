@@ -8,15 +8,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class EasyLevelScreen implements Screen {
+public class EasyLevelScreen implements Screen, ContactListener {
     private final Main game;
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
     private Texture backgroundTexture;
     private WoodBlock woodBlock1, woodBlock2, woodBlock3, woodBlock4, woodBlock5, woodBlock6, woodBlock7, woodBlock8;
     private GlassBlock glassBlock1, glassBlock2;
-    private SteelBlock steelBlock;
     private Texture catapultTexture, resumeIconTexture, wonTexture, lostTexture;
     private Bird redBird, yellowBird, purpleBird;
     private Pig pig;
@@ -26,18 +29,21 @@ public class EasyLevelScreen implements Screen {
     private Rectangle resumeButtonRectangle;
     private Rectangle wonButtonRectangle, lostButtonRectangle;
     private Vector2 touchPos;
+    private Array<Body> bodiesToRemove;
+    private Array<Bird> availableBirds;
+    private int redBirdsLeft = 2;
+    private int yellowBirdsLeft = 2;
+    private int purpleBirdsLeft = 1;
+    private float outOfBoundsX = 250f; // Distance beyond which bird is considered out of bounds
+    private boolean isNextBirdReady = false;
 
     // Bird launching variables
     private Vector2 catapultAnchor;
-    private Vector2 birdPosition;
-    private Vector2 originalBirdPosition;
-    private Vector2 launchVector;
     private boolean isDragging = false;
     private boolean isLaunched = false;
-    private boolean birdHitStructure = false;
     private float maxDragDistance = 100f;
-    private float launchPower = 20f;
     private Bird currentBird;
+    private boolean birdStopped = false;
 
     // Bird dragging constraints
     private float minDragX;
@@ -45,41 +51,30 @@ public class EasyLevelScreen implements Screen {
     private float minDragY;
     private float maxDragY;
 
-    // Structures for collision
-    private Rectangle[] allBlockRectangles;
-
     public EasyLevelScreen(Main game) {
         this.game = game;
         create();
     }
 
     private void create() {
+        // Initialize Box2D World
+        world = new World(new Vector2(0, -0.98f), true);
+        world.setContactListener(this);
+        bodiesToRemove = new Array<>();
+        debugRenderer = new Box2DDebugRenderer();
+
         backgroundTexture = new Texture("easy_level_background.png");
-        redBird = new Bird("red_bird.png", "red_bird_card.png");
-        yellowBird = new Bird("yellow_bird.png", "yellow_bird_card.png");
-        purpleBird = new Bird("purple_bird.png", "purple_bird_card.png");
-
-        woodBlock1 = new WoodBlock("wood_block.png");
-        woodBlock2 = new WoodBlock("wood_block.png");
-        woodBlock3 = new WoodBlock("wood_block.png");
-        woodBlock4 = new WoodBlock("wood_block.png");
-        woodBlock5 = new WoodBlock("wood_block.png");
-        woodBlock6 = new WoodBlock("wood_block.png");
-        woodBlock7 = new WoodBlock("wood_block.png");
-        woodBlock8 = new WoodBlock("wood_block.png");
-        glassBlock1 = new GlassBlock("glass_block.png");
-        glassBlock2 = new GlassBlock("glass_block.png");
-
         catapultTexture = new Texture("catapult.png");
         resumeIconTexture = new Texture("resume_icon.png");
         wonTexture = new Texture("level_won_button.png");
         lostTexture = new Texture("level_lost_button.png");
 
-        pig = new Pig("pig.png");
-
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         viewport = new FitViewport(800, 480);
+
+        // Create birds, blocks, and pig with physics
+        createGameElements();
 
         resumeButtonRectangle = new Rectangle(10, 410, 50, 50);
         wonButtonRectangle = new Rectangle(325, 435, 73, 25);
@@ -88,8 +83,6 @@ public class EasyLevelScreen implements Screen {
 
         // Initialize bird launching
         catapultAnchor = new Vector2(150, 130);
-        originalBirdPosition = new Vector2(catapultAnchor);
-        birdPosition = new Vector2(catapultAnchor);
         currentBird = redBird;
 
         // Set up dragging constraints
@@ -98,50 +91,197 @@ public class EasyLevelScreen implements Screen {
         minDragY = catapultAnchor.y;
         maxDragY = catapultAnchor.y + maxDragDistance;
 
-        // Initialize block rectangles for collision
-        initializeBlockRectangles();
+        availableBirds = new Array<>();
+        initializeBirds();
     }
 
-    private void initializeBlockRectangles() {
-        int blockWidth = 60, blockHeight = 40;
+    private void initializeBirds() {
+        // Clear existing birds
+        availableBirds.clear();
 
-        // Wood block rectangles
-        Rectangle[] woodBlockRects = new Rectangle[] {
-                new Rectangle(480, 75, blockWidth, blockHeight),
-                new Rectangle(570, 75, blockWidth, blockHeight),
-                new Rectangle(480, 85, blockWidth, blockHeight * 2),
-                new Rectangle(570, 85, blockWidth, blockHeight * 2),
-                new Rectangle(480, 145, blockWidth, blockHeight),
-                new Rectangle(510, 200, blockWidth / 2, blockHeight * 2),
-                new Rectangle(567, 200, blockWidth / 2, blockHeight * 2),
-                new Rectangle(570, 145, blockWidth, blockHeight)
-        };
+        // Add birds in the order they should be used
+        // 2 red birds
+        for (int i = 0; i < 2; i++) {
+            Bird redBird = new Bird(world, "red_bird.png", "red_bird_card.png", 150f, 130f);
+            availableBirds.add(redBird);
+        }
+        // 2 yellow birds
+        for (int i = 0; i < 2; i++) {
+            Bird yellowBird = new Bird(world, "yellow_bird.png", "yellow_bird_card.png", 150f, 130f);
+            availableBirds.add(yellowBird);
+        }
+        // 1 purple bird
+        Bird purpleBird = new Bird(world, "purple_bird.png", "purple_bird_card.png", 150f, 130f);
+        availableBirds.add(purpleBird);
 
-        // Glass block rectangles
-        Rectangle[] glassBlockRects = new Rectangle[] {
-                new Rectangle(525, 175, blockWidth, blockHeight),
-                new Rectangle(525, 265, blockWidth, blockHeight)
-        };
+        // Set the first bird as current
+        if (availableBirds.size > 0) {
+            currentBird = availableBirds.first();
+        }
+    }
 
-        // Combine wood and glass block rectangles
-        allBlockRectangles = new Rectangle[woodBlockRects.length + glassBlockRects.length];
-        System.arraycopy(woodBlockRects, 0, allBlockRectangles, 0, woodBlockRects.length);
-        System.arraycopy(glassBlockRects, 0, allBlockRectangles, woodBlockRects.length, glassBlockRects.length);
+    private void checkBirdOutOfBounds() {
+        if (currentBird != null && isLaunched) {
+            Vector2 birdPos = currentBird.getBody().getPosition();
+
+            // Check if bird is out of bounds or has nearly stopped
+            if (birdPos.x > outOfBoundsX || birdPos.x < -100 ||
+                    (birdStopped && Math.abs(currentBird.getBody().getLinearVelocity().x) < 0.1f)) {
+
+                // Remove the current bird from available birds
+                availableBirds.removeValue(currentBird, true);
+
+                // Update bird counts
+                if (currentBird.getBirdTexture().toString().contains("red")) {
+                    redBirdsLeft--;
+                } else if (currentBird.getBirdTexture().toString().contains("yellow")) {
+                    yellowBirdsLeft--;
+                } else if (currentBird.getBirdTexture().toString().contains("purple")) {
+                    purpleBirdsLeft--;
+                }
+
+                // Clean up the current bird
+                world.destroyBody(currentBird.getBody());
+
+                // Prepare for next bird
+                prepareNextBird();
+            }
+        }
+    }
+
+    private void prepareNextBird() {
+        if (availableBirds.size > 0) {
+            // Get the next bird
+            currentBird = availableBirds.first();
+            // Reset bird position and state
+            currentBird.getBody().setTransform(150f, 130f, 0);
+            currentBird.getBody().setLinearVelocity(0, 0);
+            currentBird.getBody().setAngularVelocity(0);
+            currentBird.getBody().setType(BodyDef.BodyType.KinematicBody);
+
+            // Reset launch states
+            isLaunched = false;
+            isDragging = false;
+            birdStopped = false;
+        } else {
+            // No more birds available, check if level is completed
+            checkLevelCompletion();
+        }
+    }
+
+    private void checkLevelCompletion() {
+        if (availableBirds.size == 0) {
+            // Check if pig is destroyed or other victory conditions
+            // For now, we'll just transition to the completed screen
+            game.setScreen(new LevelCompletedScreen(game));
+        }
+    }
+
+    private void createGameElements() {
+        // Birds
+        redBird = new Bird(world, "red_bird.png", "red_bird_card.png", 150f, 130f);
+        yellowBird = new Bird(world, "yellow_bird.png", "yellow_bird_card.png", 200f, 130f);
+        purpleBird = new Bird(world, "purple_bird.png", "purple_bird_card.png", 250f, 130f);
+
+        // Wood Blocks (maintaining original X, Y coordinates)
+        woodBlock1 = new WoodBlock(world, "wood_block.png", 480f, 75f);
+        woodBlock2 = new WoodBlock(world, "wood_block.png", 570f, 75f);
+        woodBlock3 = new WoodBlock(world, "wood_block.png", 480f, 85f);
+        woodBlock4 = new WoodBlock(world, "wood_block.png", 570f, 85f);
+        woodBlock5 = new WoodBlock(world, "wood_block.png", 480f, 145f);
+        woodBlock6 = new WoodBlock(world, "wood_block.png", 510f, 200f);
+        woodBlock7 = new WoodBlock(world, "wood_block.png", 567f, 200f);
+        woodBlock8 = new WoodBlock(world, "wood_block.png", 570f, 145f);
+
+        // Glass Blocks
+        glassBlock1 = new GlassBlock(world, "glass_block.png", 525f, 175f);
+        glassBlock2 = new GlassBlock(world, "glass_block.png", 525f, 265f);
+
+        // Pig
+        pig = new Pig(world, "pig.png", 533f, 212f);
     }
 
     @Override
     public void render(float delta) {
+        world.step(delta, 6, 2);
+        checkBirdOutOfBounds();
+
+        // Handle physics body removal
+        for (Body body : bodiesToRemove) {
+            if (body != null) {
+                world.destroyBody(body);
+            }
+        }
+        bodiesToRemove.clear();
+
+        // Check if bird has nearly stopped
+        if (isLaunched && !birdStopped && currentBird != null) {
+            Vector2 velocity = currentBird.getBody().getLinearVelocity();
+            if (Math.abs(velocity.x) < 0.01f && Math.abs(velocity.y) < 0.01f) {
+                birdStopped = true;
+                // Apply small downward force to ensure the bird falls
+                currentBird.getBody().setLinearVelocity(0, -0.1f);
+            }
+        }
+
         input();
-        updateBirdPhysics(delta);
         draw();
     }
+
+    @Override
+    public void beginContact(Contact contact) {
+        Body bodyA = contact.getFixtureA().getBody();
+        Body bodyB = contact.getFixtureB().getBody();
+
+        if (currentBird != null && (bodyA == currentBird.getBody() || bodyB == currentBird.getBody())) {
+            Body otherBody = (bodyA == currentBird.getBody()) ? bodyB : bodyA;
+
+            if (isWoodBlock(otherBody)) {
+                bodiesToRemove.add(otherBody);
+                // Don't force velocity change, let physics handle it naturally
+            }
+            else if (isGlassBlock(otherBody)) {
+                // Let the bird bounce naturally
+                currentBird.getBody().applyLinearImpulse(
+                        new Vector2(-0.5f, 0.5f),
+                        currentBird.getBody().getWorldCenter(),
+                        true
+                );
+            }
+        }
+    }
+    private boolean isWoodBlock(Body body) {
+        return (woodBlock1 != null && body == woodBlock1.getBody()) ||
+                (woodBlock2 != null && body == woodBlock2.getBody()) ||
+                (woodBlock3 != null && body == woodBlock3.getBody()) ||
+                (woodBlock4 != null && body == woodBlock4.getBody()) ||
+                (woodBlock5 != null && body == woodBlock5.getBody()) ||
+                (woodBlock6 != null && body == woodBlock6.getBody()) ||
+                (woodBlock7 != null && body == woodBlock7.getBody()) ||
+                (woodBlock8 != null && body == woodBlock8.getBody());
+    }
+
+    private boolean isGlassBlock(Body body) {
+        return (glassBlock1 != null && body == glassBlock1.getBody()) ||
+                (glassBlock2 != null && body == glassBlock2.getBody());
+    }
+
+    @Override
+    public void endContact(Contact contact) {}
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {}
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {}
+
 
     private void input() {
         if (Gdx.input.isTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
 
-            // Existing button checks
+            // Button checks remain the same
             if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
                 game.setScreen(new PauseScreen(game, this));
                 return;
@@ -153,91 +293,80 @@ public class EasyLevelScreen implements Screen {
                 return;
             }
 
-            // Bird dragging logic
             if (!isLaunched) {
                 if (isBirdDraggable(touchPos)) {
                     if (!isDragging) {
                         isDragging = true;
+
+                        prepareBirdForLaunch(currentBird);
                     }
 
-                    // Constrain dragging to a specific area
-                    float constrainedX = Math.max(minDragX, Math.min(touchPos.x, maxDragX));
-                    float constrainedY = Math.max(minDragY, Math.min(touchPos.y, maxDragY));
+                    // Calculate distance from touch point to anchor
+                    Vector2 dragVector = new Vector2(
+                            touchPos.x - catapultAnchor.x,
+                            touchPos.y - catapultAnchor.y
+                    );
 
-                    // Update bird position during drag
-                    birdPosition.set(constrainedX, constrainedY);
+                    float dragDistance = dragVector.len();
+                    if (dragDistance > maxDragDistance) {
+                        // Constrain to maximum drag distance
+                        dragVector.nor().scl(maxDragDistance);
+                    }
+
+                    // Update bird position relative to catapult anchor
+                    float newX = catapultAnchor.x + dragVector.x;
+                    float newY = catapultAnchor.y + dragVector.y;
+
+                    // Update bird body position during drag
+                    currentBird.getBody().setTransform(newX, newY, 0);
                 }
             }
         } else if (isDragging) {
-            // Launch bird when touch is released
             launchBird();
             isDragging = false;
             isLaunched = true;
         }
     }
+    private void prepareBirdForLaunch(Bird bird) {
+        bird.getBody().setType(BodyDef.BodyType.DynamicBody);
+        bird.getBody().setLinearVelocity(0, 0);
+        bird.getBody().setType(BodyDef.BodyType.DynamicBody);
+    }
 
     private boolean isBirdDraggable(Vector2 touchPos) {
-        // Check if touch is near the catapult and within dragging constraints
-        return touchPos.dst(catapultAnchor) < 50 &&
-                touchPos.x <= catapultAnchor.x &&
-                touchPos.y >= catapultAnchor.y &&
-                touchPos.y <= catapultAnchor.y + maxDragDistance;
-    }
-
-    private void launchBird() {
-        // Reset bird hit structure flag
-        birdHitStructure = false;
-
-        // Calculate launch vector based on drag
-        // Ensure forward and upward launch
-        launchVector = new Vector2(
-                Math.abs(catapultAnchor.x - birdPosition.x) * launchPower,
-                (birdPosition.y - catapultAnchor.y) * launchPower
-        );
-    }
-
-    private void updateBirdPhysics(float delta) {
-        if (isLaunched && !birdHitStructure) {
-            // Simple physics simulation
-            birdPosition.x += launchVector.x * delta;
-            birdPosition.y += launchVector.y * delta;
-
-            // Apply gravity
-            launchVector.y -= 9.8f * delta;
-
-            // Check for collision with structures
-            if (checkStructureCollision()) {
-                birdHitStructure = true;
-                isLaunched = false;
-                launchVector.setZero();
-            }
-
-            // Optional: Stop bird if it goes off-screen
-            if (birdPosition.x > viewport.getWorldWidth() ||
-                    birdPosition.y > viewport.getWorldHeight() ||
-                    birdPosition.y < 0) {
-                birdHitStructure = true;
-                isLaunched = false;
-                launchVector.setZero();
-            }
-        }
-    }
-
-    private boolean checkStructureCollision() {
-        Rectangle birdRect = new Rectangle(
-                birdPosition.x,
-                birdPosition.y,
-                30,  // Bird width
-                30   // Bird height
-        );
-
-        for (Rectangle blockRect : allBlockRectangles) {
-            if (birdRect.overlaps(blockRect)) {
-                return true;
-            }
+        // Check if touch is within a reasonable radius of the bird's current position
+        if (!isLaunched) {
+            float touchRadius = 50f; // Adjust this value as needed
+            Vector2 birdPos = currentBird.getBody().getPosition();
+            return touchPos.dst(birdPos) < touchRadius;
         }
         return false;
     }
+    private void launchBird() {
+        Vector2 birdPos = currentBird.getBody().getPosition();
+
+        // Calculate the pull vector (from anchor to bird position)
+        Vector2 pullVector = new Vector2(birdPos.x - catapultAnchor.x, birdPos.y - catapultAnchor.y);
+
+        // Ensure a minimum pull distance for launching
+        float pullDistance = pullVector.len();
+        if (pullDistance < 10f) { // Adjust this threshold as needed
+            return; // Do not launch if the pull is too small
+        }
+
+        // Normalize the pull vector and apply scaling for launch power
+        Vector2 launchVector = pullVector.nor().scl(-pullDistance * 75.0f); // Adjust scaling factor if needed
+        launchVector.scl(Math.min(pullDistance * 75.0f, 7500f)); // Cap the launch power
+
+        // Reset bird velocity and apply impulse
+        currentBird.getBody().setLinearVelocity(0, 0);
+        currentBird.getBody().applyLinearImpulse(launchVector, currentBird.getBody().getWorldCenter(), true);
+
+        isLaunched = true; // Mark as launched
+    }
+
+
+
 
     private void draw() {
         ScreenUtils.clear(Color.SKY);
@@ -253,20 +382,21 @@ public class EasyLevelScreen implements Screen {
         spriteBatch.draw(purpleBird.getBirdCardTexture(), 750, 410, 45, 60);
 
         game.getFont().draw(spriteBatch, "Score: 0", 70, 445);
-        game.getFont().draw(spriteBatch, "2", 650, 423);
-        game.getFont().draw(spriteBatch, "2", 710, 423);
-        game.getFont().draw(spriteBatch, "1", 770, 423);
+        game.getFont().draw(spriteBatch, String.valueOf(redBirdsLeft), 650, 423);
+        game.getFont().draw(spriteBatch, String.valueOf(yellowBirdsLeft), 710, 423);
+        game.getFont().draw(spriteBatch, String.valueOf(purpleBirdsLeft), 770, 423);
 
         // Draw catapult
         spriteBatch.draw(catapultTexture, 110, 75, 60, 60);
 
-        // Draw bird
+        // Draw current bird
+        Vector2 birdPos = currentBird.getBody().getPosition();
         spriteBatch.draw(
                 currentBird.getBirdTexture(),
-                birdPosition.x,
-                birdPosition.y,
-                30,
-                30
+                birdPos.x - 0.5f,
+                birdPos.y - 0.5f,
+                30f,
+                30f
         );
 
         // Draw structures
@@ -279,37 +409,38 @@ public class EasyLevelScreen implements Screen {
 
         spriteBatch.end();
 
-        // Optional: Draw slingshot stretch visualization
-        if (isDragging) {
-            drawSlingshotStretch();
-        }
-    }
-
-    private void drawSlingshotStretch() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.line(catapultAnchor.x, catapultAnchor.y, birdPosition.x, birdPosition.y);
-        shapeRenderer.end();
+        // Optional: Render Box2D debug lines
+        debugRenderer.render(world, viewport.getCamera().combined);
     }
 
     private void drawStructure() {
         int blockWidth = 60, blockHeight = 40;
 
-        spriteBatch.draw(woodBlock1.getBlockTexture(), 480, 75, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlock2.getBlockTexture(), 570, 75, blockWidth, blockHeight);
+        Vector2 woodBlock1Pos = woodBlock1.getBody().getPosition();
+        Vector2 woodBlock2Pos = woodBlock2.getBody().getPosition();
+        Vector2 woodBlock3Pos = woodBlock3.getBody().getPosition();
+        Vector2 woodBlock4Pos = woodBlock4.getBody().getPosition();
+        Vector2 woodBlock5Pos = woodBlock5.getBody().getPosition();
+        Vector2 woodBlock6Pos = woodBlock6.getBody().getPosition();
+        Vector2 woodBlock7Pos = woodBlock7.getBody().getPosition();
+        Vector2 woodBlock8Pos = woodBlock8.getBody().getPosition();
+        Vector2 pigPos = pig.getBody().getPosition();
+        Vector2 glassBlock1Pos = glassBlock1.getBody().getPosition();
+        Vector2 glassBlock2Pos = glassBlock2.getBody().getPosition();
 
-        spriteBatch.draw(woodBlock3.getBlockTexture(), 480, 85, blockWidth, blockHeight * 2);
-        spriteBatch.draw(woodBlock4.getBlockTexture(), 570, 85, blockWidth, blockHeight * 2);
+        spriteBatch.draw(woodBlock1.getBlockTexture(), woodBlock1Pos.x - 0.5f, woodBlock1Pos.y - 0.5f, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock2.getBlockTexture(), woodBlock2Pos.x - 0.5f, woodBlock2Pos.y - 0.5f, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock3.getBlockTexture(), woodBlock3Pos.x - 0.5f, woodBlock3Pos.y - 0.5f, blockWidth, blockHeight * 2);
+        spriteBatch.draw(woodBlock4.getBlockTexture(), woodBlock4Pos.x - 0.5f, woodBlock4Pos.y - 0.5f, blockWidth, blockHeight * 2);
+        spriteBatch.draw(woodBlock5.getBlockTexture(), woodBlock5Pos.x - 0.5f, woodBlock5Pos.y - 0.5f, blockWidth, blockHeight);
+        spriteBatch.draw(woodBlock6.getBlockTexture(), woodBlock6Pos.x - 0.5f, woodBlock6Pos.y - 0.5f, blockWidth / 2, blockHeight * 2);
+        spriteBatch.draw(woodBlock7.getBlockTexture(), woodBlock7Pos.x - 0.5f, woodBlock7Pos.y - 0.5f, blockWidth / 2, blockHeight * 2);
+        spriteBatch.draw(woodBlock8.getBlockTexture(), woodBlock8Pos.x - 0.5f, woodBlock8Pos.y - 0.5f, blockWidth, blockHeight);
 
-        spriteBatch.draw(woodBlock5.getBlockTexture(), 480, 145, blockWidth, blockHeight);
-        spriteBatch.draw(woodBlock6.getBlockTexture(), 510, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlock7.getBlockTexture(), 567, 200, blockWidth / 2, blockHeight * 2);
-        spriteBatch.draw(woodBlock8.getBlockTexture(), 570, 145, blockWidth, blockHeight);
+        spriteBatch.draw(pig.getPigTexture(), pigPos.x - 0.5f, pigPos.y - 0.5f, 40, 40);
 
-        spriteBatch.draw(pig.getPigTexture(), 533, 212, 40, 40);
-
-        spriteBatch.draw(glassBlock1.getBlockTexture(), 525, 175, blockWidth, blockHeight);
-        spriteBatch.draw(glassBlock2.getBlockTexture(), 525, 265, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock1.getBlockTexture(), glassBlock1Pos.x - 0.5f, glassBlock1Pos.y - 0.5f, blockWidth, blockHeight);
+        spriteBatch.draw(glassBlock2.getBlockTexture(), glassBlock2Pos.x - 0.5f, glassBlock2Pos.y - 0.5f, blockWidth, blockHeight);
     }
 
     @Override
@@ -350,5 +481,10 @@ public class EasyLevelScreen implements Screen {
         pig.dispose();
         spriteBatch.dispose();
         shapeRenderer.dispose();
+        world.dispose();
+        debugRenderer.dispose();
+        for (Bird bird : availableBirds) {
+            bird.dispose();
+        }
     }
 }

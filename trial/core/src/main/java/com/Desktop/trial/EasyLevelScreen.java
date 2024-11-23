@@ -34,7 +34,7 @@ public class EasyLevelScreen implements Screen, ContactListener {
     private int redBirdsLeft = 2;
     private int yellowBirdsLeft = 2;
     private int purpleBirdsLeft = 1;
-    private float outOfBoundsX = 250f; // Distance beyond which bird is considered out of bounds
+    private float outOfBoundsX = 1000f; // Distance beyond which bird is considered out of bounds
     private boolean isNextBirdReady = false;
 
     // Bird launching variables
@@ -177,6 +177,30 @@ public class EasyLevelScreen implements Screen, ContactListener {
         }
     }
 
+    private void drawTrajectory(Vector2 start, Vector2 velocity, float timeStep, int maxSteps) {
+        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BROWN); // Adjust the color to match your design.
+
+        Vector2 gravity = world.getGravity(); // Gravity from the physics world.
+        Vector2 currentPoint = new Vector2(start);
+
+        for (int i = 0; i < maxSteps; i++) {
+            // Calculate the position of the bird at each step
+            float t = i * timeStep;
+            float x = start.x + velocity.x * t;
+            float y = start.y + velocity.y * t + 0.5f * gravity.y * t * t;
+
+            // Stop drawing if the point is below ground level
+            if (y < 0) break;
+
+            currentPoint.set(x, y);
+            shapeRenderer.circle(currentPoint.x, currentPoint.y, 2f); // Draw a small circle
+        }
+
+        shapeRenderer.end();
+    }
+
     private void createGameElements() {
         // Birds
         redBird = new Bird(world, "red_bird.png", "red_bird_card.png", 150f, 130f);
@@ -205,50 +229,40 @@ public class EasyLevelScreen implements Screen, ContactListener {
     public void render(float delta) {
         world.step(delta, 6, 2);
         checkBirdOutOfBounds();
-
-        // Handle physics body removal
-        for (Body body : bodiesToRemove) {
-            if (body != null) {
-                world.destroyBody(body);
-            }
-        }
-        bodiesToRemove.clear();
-
-        // Check if bird has nearly stopped
-        if (isLaunched && !birdStopped && currentBird != null) {
-            Vector2 velocity = currentBird.getBody().getLinearVelocity();
-            if (Math.abs(velocity.x) < 0.01f && Math.abs(velocity.y) < 0.01f) {
-                birdStopped = true;
-                // Apply small downward force to ensure the bird falls
-                currentBird.getBody().setLinearVelocity(0, -0.1f);
-            }
-        }
-
+        // Handle bird launch input and draw the scene
         input();
         draw();
+
+        if (isDragging && currentBird != null) {
+            Vector2 birdPos = currentBird.getBody().getPosition();
+            Vector2 pullVector = new Vector2(birdPos.x - catapultAnchor.x, birdPos.y - catapultAnchor.y);
+            Vector2 launchVelocity = pullVector.nor().scl(-Math.min(pullVector.len() * 50.0f, 1000f)); // Match launch calculation
+
+            drawTrajectory(birdPos, launchVelocity, 0.1f, 100); // Adjust timeStep and maxSteps for accuracy
+        }
     }
 
     @Override
     public void beginContact(Contact contact) {
-        Body bodyA = contact.getFixtureA().getBody();
-        Body bodyB = contact.getFixtureB().getBody();
+//        Body bodyA = contact.getFixtureA().getBody();
+//        Body bodyB = contact.getFixtureB().getBody();
+//
+//        if (currentBird != null && (bodyA == currentBird.getBody() || bodyB == currentBird.getBody())) {
+//            Body otherBody = (bodyA == currentBird.getBody()) ? bodyB : bodyA;
 
-        if (currentBird != null && (bodyA == currentBird.getBody() || bodyB == currentBird.getBody())) {
-            Body otherBody = (bodyA == currentBird.getBody()) ? bodyB : bodyA;
-
-            if (isWoodBlock(otherBody)) {
-                bodiesToRemove.add(otherBody);
-                // Don't force velocity change, let physics handle it naturally
-            }
-            else if (isGlassBlock(otherBody)) {
-                // Let the bird bounce naturally
-                currentBird.getBody().applyLinearImpulse(
-                        new Vector2(-0.5f, 0.5f),
-                        currentBird.getBody().getWorldCenter(),
-                        true
-                );
-            }
-        }
+//            if (isWoodBlock(otherBody)) {
+//                bodiesToRemove.add(otherBody);
+//                // Don't force velocity change, let physics handle it naturally
+//            }
+//            else if (isGlassBlock(otherBody)) {
+//                // Let the bird bounce naturally
+//                currentBird.getBody().applyLinearImpulse(
+//                        new Vector2(-0.5f, 0.5f),
+//                        currentBird.getBody().getWorldCenter(),
+//                        true
+//                );
+//            }
+//        }
     }
     private boolean isWoodBlock(Body body) {
         return (woodBlock1 != null && body == woodBlock1.getBody()) ||
@@ -281,50 +295,30 @@ public class EasyLevelScreen implements Screen, ContactListener {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
 
-            // Button checks remain the same
-            if (resumeButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new PauseScreen(game, this));
-                return;
-            } else if (wonButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new LevelCompletedScreen(game));
-                return;
-            } else if (lostButtonRectangle.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new LevelLostScreen(game));
-                return;
-            }
-
             if (!isLaunched) {
                 if (isBirdDraggable(touchPos)) {
                     if (!isDragging) {
                         isDragging = true;
-
-                        prepareBirdForLaunch(currentBird);
+                        currentBird.getBody().setType(BodyDef.BodyType.DynamicBody);
                     }
 
-                    // Calculate distance from touch point to anchor
                     Vector2 dragVector = new Vector2(
                             touchPos.x - catapultAnchor.x,
                             touchPos.y - catapultAnchor.y
                     );
-
                     float dragDistance = dragVector.len();
                     if (dragDistance > maxDragDistance) {
-                        // Constrain to maximum drag distance
                         dragVector.nor().scl(maxDragDistance);
                     }
 
-                    // Update bird position relative to catapult anchor
                     float newX = catapultAnchor.x + dragVector.x;
                     float newY = catapultAnchor.y + dragVector.y;
-
-                    // Update bird body position during drag
                     currentBird.getBody().setTransform(newX, newY, 0);
                 }
             }
         } else if (isDragging) {
             launchBird();
             isDragging = false;
-            isLaunched = true;
         }
     }
     private void prepareBirdForLaunch(Bird bird) {
@@ -345,24 +339,16 @@ public class EasyLevelScreen implements Screen, ContactListener {
     private void launchBird() {
         Vector2 birdPos = currentBird.getBody().getPosition();
 
-        // Calculate the pull vector (from anchor to bird position)
+        // Calculate the pull vector and launch the bird
         Vector2 pullVector = new Vector2(birdPos.x - catapultAnchor.x, birdPos.y - catapultAnchor.y);
+        Vector2 launchVector = pullVector.nor().scl(-Math.min(pullVector.len() * 50.0f, 1000f)); // Cap the launch power
 
-        // Ensure a minimum pull distance for launching
-        float pullDistance = pullVector.len();
-        if (pullDistance < 10f) { // Adjust this threshold as needed
-            return; // Do not launch if the pull is too small
-        }
-
-        // Normalize the pull vector and apply scaling for launch power
-        Vector2 launchVector = pullVector.nor().scl(-pullDistance * 75.0f); // Adjust scaling factor if needed
-        launchVector.scl(Math.min(pullDistance * 75.0f, 7500f)); // Cap the launch power
-
-        // Reset bird velocity and apply impulse
-        currentBird.getBody().setLinearVelocity(0, 0);
         currentBird.getBody().applyLinearImpulse(launchVector, currentBird.getBody().getWorldCenter(), true);
 
-        isLaunched = true; // Mark as launched
+        // Ensure bird continues indefinitely
+        currentBird.getBody().setLinearDamping(0); // No friction
+        currentBird.getBody().setGravityScale(0); // No gravity
+        isLaunched = true;
     }
 
 
@@ -483,6 +469,7 @@ public class EasyLevelScreen implements Screen, ContactListener {
         shapeRenderer.dispose();
         world.dispose();
         debugRenderer.dispose();
+        shapeRenderer.dispose();
         for (Bird bird : availableBirds) {
             bird.dispose();
         }
